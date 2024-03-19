@@ -1,0 +1,242 @@
+\documentclass[10pt,twocolumn,letterpaper, anonymous=false]{article}
+
+\usepackage{iccv}
+\usepackage{times}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{autobreak}
+\usepackage{float}
+% Include other packages here, before hyperref.
+
+% If you comment hyperref and then uncomment it, you should delete
+% egpaper.aux before re-running latex.  (Or just hit 'q' on the first latex
+% run, let it finish, and you should be clear).
+\usepackage[breaklinks=true,bookmarks=false]{hyperref}
+
+\iccvfinalcopy % *** Uncomment this line for the final submission
+
+\def\iccvPaperID{****} % *** Enter the ICCV Paper ID here
+\def\httilde{\mbox{\tt\raisebox{-.5ex}{\symbol{126}}}}
+
+% Pages are numbered in submission mode, and unnumbered in camera-ready
+%\ificcvfinal\pagestyle{empty}\fi
+\setcounter{page}{1}
+\begin{document}
+
+%%%%%%%%% TITLE
+\title{Exploring Tone-of-Voice Features Using Machine Learning Applications}
+
+\author{Christopher Frutos\\
+Virginia Polytechnic Institute and State University\\
+ECE 5904 - Summer Project and Report\\
+{\tt\small cfrutos@vt.edu}}
+% For a paper whose authors are all at the same institution,
+% omit the following lines up until the closing ``}''.
+% Additional authors and addresses can be added with ``\and'',
+% just like the second author.
+% To save space, use either the email address or home page, not both
+%\and
+%Second Author\\
+%Institution2\\
+%First line of institution2 address\\
+%{\tt\small secondauthor@i2.org}
+%}
+
+\maketitle
+%\thispagestyle{empty}
+
+
+%%%%%%%%% ABSTRACT
+\begin{abstract}
+With many language based companies such as Grammarly taking advantage of artificial intelligence applications on the rise, it's evident that society will continue to develop technology that interfaces with humans l
+inguistically and most importantly, machine learning and deep learning applications in this field are here to stay. In this project I aim to have a machine learning model detect/predict what kind of sentence or phrase I am saying - in my case, I am providing four types of sentences: asking a question normally, asking a question rhetorically, making a statement normally, and making a sarcastic statement. This prediction method is unique in that unlike learning modules that can use voice recognition to map out your voice to words, and then lay out some underlying tone from context to determine if something was said passive aggressively, passively, professionally or casually, what happens when the audio files are too noisy to accurately make out words? Have we then lost all forms of deciphering an audio message? The goal of my approach is that I am only relying on an audio file's shape and removing any voice-to-text recognition from aiding how a message is interpreted. While it can be agreed that using a combination of both textual and voice inflection cues to determine the absolute meaning of a message, this paper will highlight how well detecting changes in pitch can lead to determining what type of message is being sent (statement, sarcastic statement, question, rhetorical question). 
+\end{abstract}
+
+%%%%%%%%% BODY TEXT
+\section{Introduction}
+
+For this project, I recorded my own voice originally set out to make 15 files for each of the 4 cases for a total of 60 files. After enough testing, it was found that with at least 25 of each of the 4 cases I was able to achieve better results; more on data analysis in the further sections. I then put the audio files into various samples of time ranging from samples the size of a tenth of a second to a fifth of a second for experimentation. The data collected from these samples are then used to train the model and we are then able to view results from multiple cases where I see how well the model can tell the difference between a question and a statement, (sarcastic included as a statement and rhetorical included as a question) how well the model and tell the difference between rhetorical and normal questions, between sarcastic and normal statements, and lastly, all four cases in the same dataset. It is important to note that going into this project, the data sets are my own and while these types of inflections and ways that humans express these social/phonetic intonations varies from culture to culture, language to language, and even individual to individual within said cultures and/or languages. It can be inferred that the models I will be training will be adjusting to my own bias and my own way of saying things. Perhaps this is a nod at the possibility of AI companions in a variety of implications, such as gaming, business-related communications, or emergency dispatching to get to know their users better.
+
+
+
+
+\section{Data}
+\subsection{Data Preparation}
+by Phil Tabor's Github repository \cite{Tabor}. processes shown in Figure \ref{fig:flowchart}
+
+The groundwork for this dataset involved a series of deliberate steps. Initially, data creation took precedence, ensuring an even distribution to effectively train the model. As mentioned earlier, the initial goal was to gather 60 audio files, 15 for each case. However, as we proceeded with training and testing, it became evident that a more substantial dataset was required to achieve a satisfactory accuracy score. This led to an expanded dataset of 25 audio files per case, totaling 100 files.
+
+The decision to utilize custom-generated data emerged after an extensive search for an audio file database meeting the criteria for robust model training, though unfortunately, no such repository was discovered. Nonetheless, it's worth considering that the methodologies employed in this experiment could potentially be applied to scenarios like a company's internal customer support database or a police station's emergency call recordings database.
+\begin{figure}[h]
+\begin{center}
+   \includegraphics[width=1\linewidth]{stmt_spect.png}
+\end{center}
+\caption{Spectral imaging of speaking "I am a Wizard" as a normal statement.}
+\label{fig:stmt_spect}
+\end{figure}
+
+\begin{figure}[h]
+\begin{center}
+   \includegraphics[width=1\linewidth]{sarc_spect.png}
+\end{center}
+\caption{Spectral imaging of speaking "I am a Wizard" as a sarcastic statement.}
+\label{fig:sarc_spect}
+\end{figure}
+
+\begin{figure}[h]
+\begin{center}
+   \includegraphics[width=1\linewidth]{ques_spect.png}
+\end{center}
+\caption{Spectral imaging of speaking "I am a Wizard?" as a normal question.}
+\label{fig:ques_spect}
+\end{figure}
+
+\begin{figure}[h]
+\begin{center}
+   \includegraphics[width=1\linewidth]{rhet_spect.png}
+\end{center}
+\caption{Spectral imaging of speaking "I am a Wizard?" as a rhetorical question.}
+\label{fig:rhet_spect}
+\end{figure}
+
+As seen in Figures \ref{fig:stmt_spect} through \ref{fig:rhet_spect}, I created a visual depiction that underscores the significant contrasts emerging from uttering the same string of words with varying inflections, each conveying a distinct tone-of-voice profile. Notably, the shape of the frequency modulation over time exhibits remarkable dissimilarity even when the identical sentences are spoken. This divergence becomes evident when the frequency changes are plotted over time. The ultimate objective here is to effectively translate these data points into an optimal representation that can serve as training input for a machine learning algorithm. In the data set, I created a variety of sentences all deriving in word length, time duration, and speech rates, so the model is relying on patterns found in the change in pitch, average pitch, and more, as highlighted later in this section. 
+\indent
+
+The way the data is processed is as follows:
+
+\begin{itemize}
+  \item Step 1: Pass all audio files through a noise reduction function
+  \item Step 2: Sample audio at X intervals (varies)
+  \item Step 3: Acquire the most dominant frequency at each interval
+  \item Step 4: Take statistics on the data acquired from the array
+  \item Step 5: Take statistics relevant to the audio's properties outside of the change in pitch observed
+  \item Step 6: Train and test the model for accuracy
+\end{itemize}
+
+
+
+\subsection{Data Results}
+
+As a breakdown for the resulting data, I will explain how all points of data are relevant or at the very least, useful in giving the model relevant data without overloading it.
+
+\begin{figure}[h]
+\begin{center}
+   \includegraphics[width=1\linewidth]{dataframe.png}
+\end{center}
+\caption{Resulting data frame after processing an entire directory of audio files.}
+\label{fig:dataframe}
+\end{figure}
+
+In Figure \ref{fig:dataframe}, I have the following data points:
+
+\begin{itemize}
+  \item Median: The median represents the middle value of a set of values. It can give you an idea of the central tendency of the dataset and is less sensitive to outliers than the mean. *This set is important because despite noise reduction, outliers often brought up by noisiness could heavily alter and saturate the data
+  \item Max: The maximum value in a dataset indicates the highest value of a specific feature. It can be useful to identify peaks or extreme values.
+  \item Min: The minimum value in a dataset indicates the lowest value of a specific feature. Similar to the maximum value, it can help identify valleys or extreme values.
+  \item Q1 (25th percentile): This is the value below which 25 percent of the data falls. It's a measure of the distribution of the data, particularly its skewness.
+  \item Q3 (75th percentile): This is the value below which 75 percent of the data falls. It's another measure of distribution and helps in understanding the spread of the data.
+  \item IQR (Interquartile Range): This is the difference between the 75th percentile (Q3) and the 25th percentile (Q1). It's a measure of statistical dispersion.
+  \item Cardinality: Cardinality refers to the number of distinct elements in a dataset. In the context of audio processing, it could refer to the number of different pitches, tones, or frequencies present in a segment.
+  \item Energy: Energy measures the magnitude of the sound signal. It can be used to identify loudness or intensity of sound.
+  \item Energy Mean: The mean energy level across different segments of the audio can give an idea of the overall energy profile.
+  \item Energy Std: The standard deviation of energy values can indicate the variability in energy across segments.
+  \item MFCC Mean 1: Mel-frequency cepstral coefficients (MFCCs) are commonly used features in audio analysis. These coefficients represent the short-term power spectrum of a sound signal. Mean values of MFCCs can provide insights into the spectral content of the audio.
+  \item MFCC Mean 2: Similar to the previous point, the mean of another MFCC coefficient could provide additional spectral information.
+  \item Type: This columm is of course, the target feature that the learning model will be predicting
+\end{itemize}
+
+
+\section{Experimental Results}
+We conducted three different experiments to evaluate the performance of our DDPG algorithm. Each experiment took on average 8 to 14 hours to complete, so in order to complete these experiments in a reasonable time, each experiment was performed simultaneously across each member's computer. The first experiment varied the learning rates of the actor and critic to help determine an optimal value. The second experiment involved training neural networks of varying sizes to determine the impact of network size on performance. In the third experiment, we extended the number of episodes used during training to determine the effect of longer training periods on the algorithm's performance. Our results showed that a learning rate of 0.001 and a larger neural network with 128 hidden units performed best while extending the number of training episodes led to diminishing returns in performance gains. Overall, our experiments demonstrated the effectiveness of our proposed approach and provided insights into the impact of various hyperparameters on the algorithm's performance.
+
+\subsection{Various Learning Rates}
+
+The plot in Figure \ref{fig:alphabeta} depicts the performance of our reinforcement learning algorithm for varying learning rates of the actor and critic components. Our experiments showed that a learning rate of 0.0001 for the actor and 0.001 for the critic produced the best performance on the task. This finding is consistent with our hypothesis and studies in class, which have suggested that low learning rates can lead to more stable and effective training of deep reinforcement learning models. 
+
+\begin{figure}[H]
+\begin{center}
+   \includegraphics[width=1\linewidth]{alphabeta_figure.png}
+\end{center}
+\caption{Plot of various learning rates for the Actor and Critic networks and their resulting total reward for each episode.}
+\label{fig:alphabeta}
+\end{figure}
+
+\subsection{Various Neural Networks}
+
+This section will provide an overview of the results from varying the size of the hidden layers of the nerual networks of the actor and critic. In this experiment, we observed in Figure \ref{fig:nn} that the 16 and 54 neuron networks produced riskier attempts, sometimes resulting in highly negative rewards but also occasionally achieving highly positive rewards. While these attempts were outliers, the 16 and 54 neuron networks exhibited slightly lower overall performance compared to the 128 neuron network. In contrast, the 128 neuron network displayed greater stability and higher overall performance than the other two networks. Based on these results, we concluded that the 128 neuron network would be the best choice for this experiment if the complexity were to increase in the future.
+
+\begin{figure}[t]
+\begin{center}
+   \includegraphics[width=1\linewidth]{nn_figure.png}
+\end{center}
+\caption{Plot of various neural network sizes for the Actor and Critic networks and their resulting total reward for each episode.}
+\label{fig:nn}
+\end{figure}
+
+\begin{figure}[t]
+\begin{center}
+   \includegraphics[width=1\linewidth]{figure_nn_two.png}
+\end{center}
+\caption{Plot of 16 and 54 neural networks per hidden layer showing that increasing the neural network count improved performance. 128 was being tested, however due to time constraints, was not able to complete in time.}
+\label{fig:nn_two}
+\end{figure}
+
+\subsection{Extended Episodes}
+
+To further evaluate the performance of our DDPG algorithm, we conducted an experiment with extended episodes. We ran the algorithm for 1000 episodes (Figure \ref{fig:long}), which took approximately 8 hours to complete. The purpose of this experiment was to determine if the performance of the algorithm would plateau after a certain number of episodes. We found that after approximately 500 episodes, we began to see diminishing returns for the total reward collected. The results suggest that while the algorithm may continue to learn beyond this point, the rate of improvement is significantly reduced. These findings could inform future experiments and potentially optimize the run-time of the algorithm.
+
+\begin{figure}[t]
+\begin{center}
+   \includegraphics[width=1\linewidth]{extended_episodes.png}
+\end{center}
+\caption{Plot of total rewards collected for each episode over 1000 episodes.}
+\label{fig:long}
+\end{figure}
+
+
+
+
+
+\begin{figure}[t]
+\begin{center}
+   \includegraphics[width=0.8\linewidth]{middle_hit.png}
+\end{center}
+\caption{Example of completed done state when the robot arm touches the middle Jenga block, which was pushed off the table to the right.}
+\label{fig:completed}
+\end{figure}
+
+\section{Discussion}
+In this study, we employed the Deep Deterministic Policy Gradient (DDPG) algorithm to teach the Franka Panda robotic arm to interact with a 3D environment of Jenga blocks to demonstrate the algorithm's ability to complete a continuous control task shown in Figure \ref{fig:completed}. Our results show that DDPG is a powerful algorithm for robotic control tasks, as it was able to successfully complete the task after extensive training. One interesting observation is that the robot arm never learned to unfold its top joint to move the gripper directly to the middle Jenga block. This could be due to a missed dimension in the action space that allows control over this joint. However, upon code inspection, our implementation uses all of the joints to create the action space so it is still unknown what is causing the issue. 
+
+Our study demonstrates the potential of DDPG as a valuable tool for teaching robotic arms to interact with complex 3D environments. Going forward, further research is needed to explore the use of DDPG for other robotic control tasks, as well as to do a deeper investigation of the impact of different hyperparameters and training regimes on the algorithm's performance. It would also be great to see more complicated tasks being performed, such as picking up and moving the jenga block to a desired location. Overall, the results of this study suggest that DDPG can play a crucial role in advancing the field of robotics and artificial intelligence, with exciting implications for a wide range of real-world applications.
+
+\section{Contributions}
+As a key contributor to the project, I developed and created a custom OpenAI Gym environment using PyBullet, which involved designing all the functions of the RobotArmEnv object to enable resetting, stepping, computing reward and done signals, as well as rendering the OpenGL GUI. The creation of this environment posed a significant challenge, requiring a comprehensive understanding of both PyBullet and the OpenAI Gym framework. Additionally, I implemented a dynamic input feature that allowed users to specify the target block for the robot arm to manipulate. Although I added a reward function for moving the target block to a specific location, due to time constraints and limitations, we were unable to carry out this advanced task. Collaborating with my teammates, I ensured that the environment was fully functional and properly integrated with the DDPG algorithm. While performing the experiments, I executed the various learning rates experiment on my personal computer. Overall, the successful implementation of this custom environment was a critical step in developing a unique platform for testing the application of DDPG to a continuous control problem.
+
+
+\begin{thebibliography}{00}
+
+\bibitem{BD} W. D. Heaven, “Forget Boston Dynamics. This Robot Taught Itself to Walk.” With AI, MIT Technology Review, Apr. 09, 2021. Accessed: Apr. 03, 2023. [Online]. Available: https://www.technologyreview.com/2021/04/08/1022176/boston-dynamics-cassie-robot-walk-reinforcement-learning-ai/amp/.
+
+\bibitem{Lillicrap} T. P. Lillicrap, J. J. Hunt, A. Pritzel, N. Heess, T. Erez, Y. Tassa, D. Silver, and D. Wierstra, "Continuous Control with Deep Reinforcement Learning," in Proceedings of the 4th International Conference on Learning Representations (ICLR), San Juan, Puerto Rico, May 2016.
+
+\bibitem{Mahmood} A. R. Mahmood, D. Korenkevych, G. Vasan, W. Ma and J. Bergstra, "Benchmarking Reinforcement Learning Algorithms on Real-World Robots," in Proceedings of the 2018 IEEE International Conference on Robotics and Automation (ICRA), Brisbane, Australia, May 2018, pp. 1-8.
+
+\bibitem{sudo} Deep deterministic policy gradient¶. Deep Deterministic Policy Gradient - Spinning Up documentation. (n.d.). Retrieved May 6, 2023, from https://spinningup.openai.com/en/latest/algorithms/ddpg.html 
+
+\bibitem{Tabor} P. Tabor, "Actor-Critic-Methods-Paper-To-Code," GitHub. [Online]. Available: https://github.com/philtabor/Actor-Critic-Methods-Paper-To-Code/tree/master/DDPG. [Accessed: May 6, 2023].
+
+\bibitem{panda} Bullet physics SDK. GitHub. (n.d.). Available: https://github.com/bulletphysics [Accessed: May 6, 2023].
+
+\end{thebibliography}
+
+
+%{\small
+%\bibliographystyle{ieee}
+
+%\bibliography{egbib}
+%}
+
+\end{document}
